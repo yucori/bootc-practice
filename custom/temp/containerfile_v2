@@ -1,8 +1,0 @@
-FROM quay.io/centos-bootc/centos-bootc:stream9
-
-# 1. cloud-init 필수 패키지 설치
-RUN dnf install -y cloud-init && \
-  systemctl enable cloud-init.service && \
-  dnf clean all
-
-EXPOSE 80
