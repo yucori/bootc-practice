@@ -1,0 +1,28 @@
+# 1단계: 최소한의 Fedora bootc 베이스 이미지 사용
+FROM quay.io/centos-bootc/centos-bootc:9
+# 2단계: minimal 매니페스트로 루트 파일시스템 생성
+RUN /usr/libexec/bootc-base-imagectl build-rootfs --manifest=minimal /target-rootfs
+
+# 3단계: 빈 이미지에 위에서 만든 루트 파일시스템 복사
+FROM scratch
+COPY --from=builder /target-rootfs/ /
+
+# 4단계: (선택) 필요한 패키지만 최소로 설치
+RUN <<EOF
+set -xeuo pipefail
+# 예시: 네트워킹만 필요하다면 NetworkManager만 설치
+dnf -y install NetworkManager
+dnf clean all
+rm -rf /var/{log,cache,lib}/*
+EOF
+
+# 5단계: 필수 레이블(bootc 인식용)
+LABEL containers.bootc=1
+LABEL ostree.bootable=1
+
+# 6단계: systemd로 부팅(컨테이너로 실행 시)
+STOPSIGNAL SIGRTMIN+3
+CMD ["/sbin/init"]
+
+# 7단계: 이미지 린트 체크(권장)
+RUN bootc container lint

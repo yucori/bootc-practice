@@ -1,0 +1,4 @@
+[[customizations.user]]
+name = "jiwon"
+password = "*puttyPie*"
+groups = ["wheel"]
