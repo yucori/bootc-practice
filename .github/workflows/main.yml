@@ -14,7 +14,7 @@ jobs:
       run: sudo apt install -y podman
  
     - name: Build an image
-      run: podman build -t bootc:latest .
+      run: podman build -t bootc:latest /root
 
     - name: Login Registry
       run: podman login -u ${{ secrets.REGISTRY_USER }} -p ${{ secrets.REGISTRY_PASS }} docker.io
