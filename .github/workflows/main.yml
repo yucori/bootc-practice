@@ -21,4 +21,3 @@ jobs:
 
     - name: Push an Image
       run: podman push bootc:latest docker.io/${{ secrets.REGISTRY_USER }}/bootc:latest
-			
