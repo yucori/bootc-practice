@@ -15,10 +15,10 @@ jobs:
  
     - name: Build an image
       run: podman build -t bootc:latest .
-			
+
     - name: Login Registry
       run: podman login -u ${{ secrets.REGISTRY_USER }} -p ${{ secrets.REGISTRY_PASS }} docker.io
-			
+
     - name: Push an Image
       run: podman push bootc:latest docker.io/${{ secrets.REGISTRY_USER }}/bootc:latest
 			
