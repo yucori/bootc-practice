@@ -17,7 +17,7 @@ jobs:
       run: podman build -t bootc:latest /root
 
     - name: Login Registry
-      run: podman login -u ${{ secrets.REGISTRY_USER }} -p ${{ secrets.REGISTRY_PASS }} docker.io
+      run: podman login -u ${{ secrets.REGISTRY_USER }} -p ${{ secrets.REGISTRY_PW }} docker.io
 
     - name: Push an Image
       run: podman push bootc:latest docker.io/${{ secrets.REGISTRY_USER }}/bootc:latest
