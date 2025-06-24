@@ -1,0 +1,25 @@
+name : Build & Push
+
+on:
+  push:
+      branches: [main]
+	workflow_dispatch:
+
+jobs:
+	build:
+		runs-on: self-hosted
+		steps:
+			- uses: actions/checkout@v4
+			
+			- name: Install Podman
+				run: sudo dnf install -y podman
+				
+			- name: Build an image
+				run: podman build -t bootc:latest .
+			
+			- name: Login Registry
+				run: podman login -u ${{ secrets.REGISTRY_USER }} -p ${{ secrets.REGISTRY_PASS }} docker.io
+			
+			- name: Push an Image
+				run: podman push bootc:latest docker.io/${{ secrets.REGISTRY_USER }}/bootc:latest
+			
