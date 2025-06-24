@@ -11,7 +11,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4		
     - name: Install Podman
-      run: sudo dnf install -y podman
+      run: sudo apt install -y podman
  
     - name: Build an image
       run: podman build -t bootc:latest .
