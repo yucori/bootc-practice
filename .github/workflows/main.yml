@@ -6,14 +6,30 @@ on:
   workflow_dispatch:
 
 jobs:
+  notify_discord:
+    runs-on: self-hosted
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Notify Discord
+      uses: rjsone/discord-webhook-notify@v1
+      with:
+          severity: info
+          details: "${{ github.actor }} added new push\n📜 ${{ github.event.head_commit.message }}\n🔗[Commit details](https://github.com/${{ github.repository }}/commit/${{ github.sha }})"
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+  
   build:
     runs-on: self-hosted
-    steps:
-    - uses: actions/checkout@v4		
+    needs: notify_discord
+
+    steps:    
     - name: Install Podman
       run: sudo apt install -y podman
- 
-    - name: Build an image
+
+    - id: build-phase
+      name: Build an image
       run: podman build -t bootc:latest /root
 
     - name: Login Registry
@@ -21,3 +37,17 @@ jobs:
 
     - name: Push an Image
       run: podman push bootc:latest docker.io/${{ secrets.REGISTRY_USER }}/bootc:latest
+
+    - name: 'Notify Discord - Success'
+      if: steps.build-phase.outcome == 'success'
+      uses: rjstone/discord-webhook-notify@v1
+      with:
+          severity: info
+          details: 'Build - Success'
+          webhookUrl: ${{secrets.DISCORD_WEBHOOK }}
+    - name: 'Notify Discord - Fail'
+      uses: rjstone/discord-webhook-notify@v1
+      with:
+          severity: error
+          details: 'Build - Fail'
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
